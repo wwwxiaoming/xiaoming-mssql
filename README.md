@@ -9,7 +9,7 @@ npm install xiaoming-mssql --save
 ```
 exports.mssql = {
   enable: true,
-  package: 'jt-egg-mssql',
+  package: 'xiaoming-mssql',
 };
 ```
 ## config中的配置
