@@ -28,16 +28,42 @@ config.mssql = {
 ```
 ### 注意：连接数据库的端口号只能是数字
 
-## 连接查询
+## 普通的传参查询
 ```
-async index3() {
-    console.time('计时器3');
-    const pool = this.app.mssql.get('db1');
-    const result = await pool.request().asyncExecute(`select * from Employee where Name=@name or id in (@id_array)`, {
-      id_array: [ 1, 2, 3, 4, 5, 6, 7 ],
-      name: null,
-    });
-    console.timeEnd('计时器3');
-    return result;
-  }
+function query() {
+  const sql = `select * from [user] where Id=@id and customerCompanyId=@customerCompanyId`;
+  const b = translator.execute(sql, {
+    id: 1,
+    customerCompanyId: '123',
+  });
+  console.log(b)
+}
+```
+### 真正执行的sql语句
+```
+select * from [user] where Id=1 and customerCompanyId='123'
+```
+
+## 当传参的值为null或者undefine值
+```
+function query2() {
+  const sql = `
+    declare @CustomerTypeId int
+    select stringValue,nullValue,numberValue,CustomerType from log
+    where stringValue = @stringValue and nullValue = @nullValue and numberValue = @numberValue and CustomerType=@CustomerType and number=@number`
+  const b = translator.execute(sql, {
+    stringValue: "string",
+    nullValue: null,
+    numberValue: 0,
+    CustomerType: 'Type',
+    number: undefined,
+  });
+  console.log(b)
+}
+```
+### 真正执行的sql语句
+```
+declare @CUSTOMERTYPEID int
+select stringValue,nullValue,numberValue,CustomerType from log
+where stringValue = 'string' and nullValue = '' and numberValue = 0 and CustomerType='Type' and number=''
 ```
